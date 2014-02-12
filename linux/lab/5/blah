@@ -1,0 +1,69 @@
+[1;33mdiff --git a/linux/lab/5/lab52.c b/linux/lab/5/orig.c[m
+[1;33mindex 008d3d9..37917d0 100644[m
+[1;33m--- a/linux/lab/5/lab52.c[m
+[1;33m+++ b/linux/lab/5/orig.c[m
+[1;35m@@ -16,31 +16,15 @@[m [msem_t full;             /* full: How many full buffer slots */[m
+sem_t b;                /* b: binary, used as a mutex */[m
+int data[BUF_SIZE];     /* shared finite buffer  */[m
+
+int [1;31mmain(int argc, char* argv[])[m[1;32mmain(void)[m {[1;31mif( argc < 2 )[m
+[1;31m  {[m
+[1;31m    printf("This program expects an argument\n");[m
+[1;31m    exit(1);[m
+[1;31m  }[m
+[1;31m  if( argc > 2 )[m
+[1;31m  {[m
+[1;31m    printf("Too many arguments, this program expects one argument\n");[m
+[1;31m    exit(1); [m
+[1;31m  }[m
+  pthread_t pid, cid;  [m
+  sem_init(&empty, SHARED, BUF_SIZE);[m
+  sem_init(&full, SHARED, 0);[m
+  sem_init(&b, SHARED, 1);[m
+[1;31m  int id = atoi (argv[1]) ; [m
+[1;31m  int i; [m
+[1;31m  printf("main started\n");[m
+[1;31m  for( i = 0; i < id; i++)[m
+[1;31m  {[m
+[1;31m    pthread_create(&pid, NULL, Producer, (void *) i);[m
+[1;31m    pthread_create(&cid, NULL, Consumer, (void *) i);[m
+[1;31m  }[m
+
+  [1;32mprintf("main started\n");[m
+[1;32m  pthread_create(&pid, NULL, Producer, NULL);[m
+[1;32m  pthread_create(&cid, NULL, Consumer, NULL);[m
+  pthread_join(pid, NULL);[m
+  pthread_join(cid, NULL);[m
+  printf("main done\n");[m
+[1;35m@@ -49,16 +33,17 @@[m [mint main(int argc, char* argv[]) {[m
+}[m
+
+
+void [1;31m*Producer( void *arg )[m[1;32m*Producer(void *arg)[m {
+  int semvalem,i=0,j;          /* semvalem: semaphore value of empty semaphore */[m
+
+  while(i < NUM_ITER) {[m
+[1;32m//[m    usleep(rand()%MAX_MOD);    /* pretend to generate an item by a random wait*/
+    sem_wait(&empty);[m
+    sem_wait(&b);[m
+    sem_getvalue(&empty, &semvalem);[m
+    data[BUF_SIZE-(semvalem-1)]=1; /* put item in buffer */[m
+    /* the following two lines just prints a bar showing current buffer fill */[m
+    j=BUF_SIZE; [1;31mprintf("(Producer %d,[m[1;32mprintf("(Producer,[m semaphore empty is %d) [1;31m\t",(int) arg, semvalem);[m[1;32m\t",semvalem);[m
+    while(j > semvalem) { j--; printf("="); } printf("\n");[m
+    sem_post(&b);[m
+    sem_post(&full);[m
+[1;35m@@ -73,13 +58,13 @@[m [mvoid *Consumer(void *arg) {[m
+  int semvalfu,i=0,j;       /* semvalfu: semaphore value of full semaphore */[m
+
+  while(i < NUM_ITER) {[m
+[1;32m//[m    usleep(rand()%MAX_MOD); /* pretend to consume an item by a random wait*/
+    sem_wait(&full);[m
+    sem_wait(&b);[m
+    sem_getvalue(&full, &semvalfu);[m
+    data[semvalfu]=0;       /* remove item from buffer */[m
+    /* the following two lines just prints a bar showing current buffer fill */[m
+    j=0; [1;31mprintf("(Consumer %d,[m[1;32mprintf("(Consumer,[m semaphore full is %d)  [1;31m\t",(int) arg, semvalfu);[m[1;32m\t",semvalfu);[m
+    while(j < semvalfu) { j++; printf("="); } printf("\n");[m
+    sem_post(&b);[m
+    sem_post(&empty);    [m
