@@ -36,9 +36,9 @@ case $menuitem in
 	echo "Usermode: $(($1 + $2))"
 	;;
 6)
-	i1=$(grep intr /proc/stat |awk '{print $1}')
+	i1=$(grep intr /proc/stat |awk '{print $2}')
 	sleep 1
-	i2=$(grep intr /proc/stat |awk '{print $1}')
+	i2=$(grep intr /proc/stat |awk '{print $2}')
 	echo "Det har vært $((i2-i1)) interrupts siste sekundet"
 	;;
 9)
