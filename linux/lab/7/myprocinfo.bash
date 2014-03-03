@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 echo "1 - Hvem er jeg og hva er navnet på dette scriptet?"
 echo "2 - Hvor lenge er det siden siste boot?"
 echo "3 - Hvor mange prosesser og tråder finnes?"
@@ -7,7 +7,6 @@ echo "4 - Hvor mange context switch'er fant sted siste sekund?"
 echo "5 - Hvor stor andel av CPU-tiden ble benyttet i kernelmode og i usermode siste sekund?"
 echo "6 - Hvor mange interrupts fant sted siste sekund?"
 echo "9 - Avslutt dette scriptet"
-
 
 while read menuitem; do
 case $menuitem in
@@ -29,11 +28,14 @@ case $menuitem in
 	echo "Det er blitt gjort $(($c2-$c1)) contextswitcher siste sekund"
 	;;
 5) 
-	user=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	p1=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	sleep 1
+	p2=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	p1a=(${p1// / })
+	p2a=(${p2// / })
 
-	set -- $user
-	echo "Kernelmode: $3"
-	echo "Usermode: $(($1 + $2))"
+	echo "Kernelmode: $((${p2a[0]} - ${p1a[0]}))"
+	echo "Usermode: $(($((${p2a[1]} + ${p2a[2]})) - $((${p1a[1]} + ${p1a[2]}))))"
 	;;
 6)
 	i1=$(grep intr /proc/stat |awk '{print $2}')

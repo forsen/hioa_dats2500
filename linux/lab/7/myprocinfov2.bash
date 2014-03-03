@@ -2,7 +2,7 @@
 
 width=$(($(tput cols)-10))
 height=$(tput lines)
-spm[1]="a"
+spm[1]=1
 spm[2]="Hvem er jeg og hva er navnet på dette scriptet?"
 spm[3]=2
 spm[4]="Hvor lenge er det siden siste boot?"
@@ -41,10 +41,13 @@ case $result in
 	whiptail --msgbox "Det er blitt gjort $(($c2-$c1)) contextswitcher siste sekund" 14 $width
 	;;
 5) 
-	user=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	p1=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	sleep 1
+	p2=$(grep cpu /proc/stat |head -1|awk '{print $2,$3,$4}')
+	p1a=(${p1// / })
+	p2a=(${p2// / })
 
-	set -- $user
-	whiptail --msgbox "Kernelmode: $3, Usermode: $(($1 + $2))" 14 $width
+	whiptail --msgbox "Kernelmode: $((${p2a[0]} - ${p1a[0]})) \nUsermode: $(($((${p2a[1]} + ${p2a[2]})) - $((${p1a[1]} + ${p1a[2]}))))" 14 $width
 	;;
 6)
 	i1=$(grep intr /proc/stat |awk '{print $2}')
