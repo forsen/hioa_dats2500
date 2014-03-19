@@ -5,7 +5,7 @@ read input
 size=0
 
 # her har jeg laget en enkel while loop, alle verdier blir flooret pga heltallsdivisjon
-while [[ $input -gt 1000 ]]; do
+while [[ $input -gt 999 ]]; do
 	input=$(($input/1000))
 	((size++))
 done
