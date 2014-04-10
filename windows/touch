@@ -1,0 +1,10 @@
+tips: 
+
+
+Get-Location (for fil størrelse)
+
+Get-ChildItem -recurse . | Where-Object {!$_.PSIsContainer
+} | Measure-Object
+
+(kan også finne maksfilstørrelse og slikt)
+
