@@ -8,3 +8,8 @@ Get-ChildItem -recurse . | Where-Object {!$_.PSIsContainer
 
 (kan også finne maksfilstørrelse og slikt)
 
+regex: 
+
+Get-ChildItem -recurse | Where-Object {$_.Name -match "[^æøå]|\s"}
+# win er case-insensitive
+
