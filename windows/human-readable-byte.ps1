@@ -1,8 +1,6 @@
 $in = "$input"
 $size = 0
 
-write-host $($in -gt 1024)
-
 while( $in -gt 1024 ){
     $in = $in/1024
     $size++
